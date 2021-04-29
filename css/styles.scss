@@ -1,0 +1,43 @@
+
+html{
+    > * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+}
+
+p{
+    margin: .3rem;
+}
+
+*, *::before, *::after{
+    box-sizing: inherit;
+}
+
+
+body{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    section{
+        padding: 1rem;
+        border: 1px blue dashed;
+        &.suche{
+            grid-column: 1 / -1;
+        }
+    }
+}
+
+#doppelt-box,
+#zum-scan-vorgemerkt-box,
+#fertige-buecher-box{
+    display: grid;
+    grid-template-columns: auto 3rem 3rem 5rem;
+}
+
+#uebereinstimmungen-box{
+    > div{
+        display: grid;
+        grid-template-columns: 3rem 3rem auto;
+    }
+}

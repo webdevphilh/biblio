@@ -1,0 +1,48 @@
+html > * {
+  margin: 0;
+  padding: 0;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+p {
+  margin: .3rem;
+}
+
+*, *::before, *::after {
+  -webkit-box-sizing: inherit;
+          box-sizing: inherit;
+}
+
+body {
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: 1fr 1fr 1fr 1fr;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+
+body section {
+  padding: 1rem;
+  border: 1px blue dashed;
+}
+
+body section.suche {
+  grid-column: 1 / -1;
+}
+
+#doppelt-box,
+#zum-scan-vorgemerkt-box,
+#fertige-buecher-box {
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: auto 3rem 3rem 5rem;
+      grid-template-columns: auto 3rem 3rem 5rem;
+}
+
+#uebereinstimmungen-box > div {
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: 3rem 3rem auto;
+      grid-template-columns: 3rem 3rem auto;
+}
+/*# sourceMappingURL=styles.css.map */
