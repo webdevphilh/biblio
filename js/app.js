@@ -35,6 +35,28 @@ $.ajax({
     },
     dataType: "text",
     complete: function () {
-        console.log(data);
+        digitalDatabase = data;
     }
 });
+
+
+let digitalDatabase = [];
+let tempList = [];
+
+document.addEventListener("DOMContentLoaded", function () {
+    document.getElementById("suche-btn").addEventListener("click", function () {
+        let suche = document.getElementById("eingabe").value;
+
+        for (let i=0; i< digitalDatabase.length; i++){
+            // [Nummer, Titel, Dateiform, Datum der Aufnahme]
+            suchArray = digitalDatabase[i][0].split("\t");
+            let title = suchArray[1];
+
+            // the titles of the books has "_dl" and "_sw" in the name, they re doubles
+            if ( title && ! title.includes("_sw_")){
+                tempList.push(title);
+            }
+            console.log(delSpecialLetters(tempList), suche);
+        }
+    })
+})
