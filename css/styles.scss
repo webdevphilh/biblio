@@ -21,6 +21,7 @@ p{
 body{
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr;
+    width: 130%;
     section{
         padding: 1rem;
         border: 1px blue dashed;

@@ -108,33 +108,35 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         }
 
-        // compare seach-string with digital library and create <div><p><p><p></div>
         let suche = document.getElementById("eingabe").value;
+        // compare seach-string with digital library and sort array
+        let finalSearchArray = [];
         for (let i=0; i < fileList.length; i++){
             let simi = similarity(suche, fileList[i][0]);
             if ( simi >= 0.1 ){
                 // [percentage of match, formated for search, raw title]
-                let finalSearchArray = [(simi*100).toFixed(2), fileList[i][0], fileList[i][1]];
-
-                //console.log(finalSearchArray);
-                let divElement = document.createElement("div");
-                let p1 = document.createElement("p");
-                p1.append(document.createTextNode(finalSearchArray[0] + "%"));
-                divElement.appendChild(p1);
-
-                let p2 = document.createElement("p");
-                p2.append(document.createTextNode(finalSearchArray[2][0]));
-                divElement.appendChild(p2);
-
-                let p3 = document.createElement("p");
-                p3.append(document.createTextNode(finalSearchArray[1]));
-                divElement.appendChild(p3);
-
-                document.getElementById("uebereinstimmungen-box").appendChild(divElement);
+                finalSearchArray.push([(simi*100).toFixed(2), fileList[i][0], fileList[i][1]]);
             }
         }
+        finalSearchArray.sort().reverse();
+        console.log(finalSearchArray);
 
+        // create <div><p><p><p></div> with results
+        for (let i=0; i < finalSearchArray.length; i++) {
+            let divElement = document.createElement("div");
+            let p1 = document.createElement("p");
+            p1.append(document.createTextNode(finalSearchArray[i][0] + "%"));
+            divElement.appendChild(p1);
 
+            let p2 = document.createElement("p");
+            p2.append(document.createTextNode(finalSearchArray[i][2][0]));
+            divElement.appendChild(p2);
 
+            let p3 = document.createElement("p");
+            p3.append(document.createTextNode(finalSearchArray[i][1]));
+            divElement.appendChild(p3);
+
+            document.getElementById("uebereinstimmungen-box").appendChild(divElement);
+        }
     });
 });
