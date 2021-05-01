@@ -36,6 +36,10 @@ body section.suche {
   grid-column: 1 / -1;
 }
 
+body section.suche > form > input {
+  width: 40%;
+}
+
 #doppelt-box,
 #zum-scan-vorgemerkt-box,
 #fertige-buecher-box {

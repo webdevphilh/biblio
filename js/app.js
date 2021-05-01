@@ -69,10 +69,10 @@ function similarity(s1, s2) {
 }
 
 
+/* - - load the digital library - - */
 let digitalDatabase = [];
-
 $.ajax({
-    url: "./databases/Scanner_nur_PDF.csv",
+    url: "./databases/lib1.csv",
     async: false,
     success: function (csvd) {
         data = $.csv.toArrays(csvd);
@@ -84,21 +84,45 @@ $.ajax({
 });
 
 
-/*
-title filter:
-"_0921" = unterstrich + zahl
-*/
+/* - - load physical library */
+let physicalLibrary = [];
+$.ajax({
+    url: "./databases/base1.csv",
+    async: false,
+    success: function (csvd) {
+        data = $.csv.toArrays(csvd);
+    },
+    dataType: "text",
+    complete: function () {
+        physicalLibrary = data;
+    }
+});
 
 
+/* - - prepare searchlist */
+let searchbox = document.getElementById("physical-library");
+// get physical book names and formating
+let searchArray = []
+for( let i=0; i < physicalLibrary.length; i++){
+    searchArray.push(physicalLibrary[i][0].split(";")); // [ bookname, block, keyname]
+}
+// generate search options
+for (let i=0; i < physicalLibrary.length; i++){
+    let option = document.createElement("option");
+    option.append(document.createTextNode(searchArray[i][0]));
+    searchbox.appendChild(option);
+}
+
+
+/*  - - search function and show matches - - */
 let fileList = [];
-
 document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("suche-btn").addEventListener("click", function () {
 
         // get and format the title-string of the digital library
-        for (let i=0; i< digitalDatabase.length; i++){
+        for (let i=0; i < digitalDatabase.length; i++){
             // [Nummer, Titel, Dateiform, Datum der Aufnahme, Dateigroesse]
-            suchArray = digitalDatabase[i][0].split(";");
+            let suchArray = digitalDatabase[i][0].split(";");
             let title = suchArray[1];
 
             // the titles of the books has "_dl" and "_sw" in the name, they re doubles
@@ -119,7 +143,14 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         }
         finalSearchArray.sort().reverse();
-        console.log(finalSearchArray);
+
+        // save the block and keyname of the physical books in the spans (for later use)
+        for (let i=0; i < searchArray.length; i++){
+            if (suche == searchArray[i][0]){
+                document.getElementById("block").innerText = searchArray[i][1];
+                document.getElementById("keyname").innerText = searchArray[i][2];
+            }
+        }
 
         // create <div><p><p><p></div> with results
         for (let i=0; i < finalSearchArray.length; i++) {
