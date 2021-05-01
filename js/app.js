@@ -69,7 +69,7 @@ function similarity(s1, s2) {
 }
 
 
-/* - - load the digital library - - */
+/* - - load digital library - - */
 let digitalDatabase = [];
 $.ajax({
     url: "./databases/lib1.csv",
@@ -83,8 +83,7 @@ $.ajax({
     }
 });
 
-
-/* - - load physical library */
+/* - - load physical library - - */
 let physicalLibrary = [];
 $.ajax({
     url: "./databases/base1.csv",
@@ -98,8 +97,13 @@ $.ajax({
     }
 });
 
+/* To - Do:
+ * - 100% treffer werden ganz unten angezeigt.
+ * - refresh bei neuer suche
+ */
 
-/* - - prepare searchlist */
+
+/* - - prepare searchlist - - */
 let searchbox = document.getElementById("physical-library");
 // get physical book names and formating
 let searchArray = []
@@ -113,6 +117,27 @@ for (let i=0; i < physicalLibrary.length; i++){
     searchbox.appendChild(option);
 }
 
+
+/**
+ * 
+ *  ------ alte version ------
+ * -> abgehakt button
+ * titel eingabe, block und keyname in variable speichern
+ * (letzte) abgehakt datei einlesen
+ * neue datei erstellen "abgahakt-ss-mm-hh-dd-MM-yyyy"
+ * variable-array + voerherige abgekakt liste in aktuelle datei speichern
+ * 
+ * aktuelle datei in array speichern
+ * abgehakt-liste erzeugen <div><p><p><p></div>
+ * 
+ * neue datei für suchliste von physischer lib erstellen "suche-ss-mm-hh-dd-MM-yyyy"
+ * aktuelle abgehakte suche nicht drin speichern (letzter eintrag oben)
+ * 
+ * 
+ * -> rückgängig button
+ * aktuellste datei löschen
+ * neu laden
+ */
 
 /*  - - search function and show matches - - */
 let fileList = [];
@@ -137,7 +162,7 @@ document.addEventListener("DOMContentLoaded", function () {
         let finalSearchArray = [];
         for (let i=0; i < fileList.length; i++){
             let simi = similarity(suche, fileList[i][0]);
-            if ( simi >= 0.1 ){
+            if ( simi >= 0.2 ){
                 // [percentage of match, formated for search, raw title]
                 finalSearchArray.push([(simi*100).toFixed(2), fileList[i][0], fileList[i][1]]);
             }
