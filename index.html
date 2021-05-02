@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="./js/jquery.js"></script>
-    <script src="./js/jquery-csv.js"></script>
 
     <link rel="stylesheet" href="css/styles.css">
     <link rel="shortcut icon" href="#">
@@ -24,47 +22,36 @@
             </datalist>
             <button id="suche-btn"><a href="#">Suche</a></button>
 
-            <button onclick="check()">Abhaken</button>
+            <button id="abhaken-btn">Abhaken</button>
             <button onclick="markForScan()">Zum scannen vormerken</button>
         </form>
     </section>
 
     <section id="digital-bib">
-        <h2>Übereinstimmungen mit digitaler Bibliothek:</h2>
+        <h2>Übereinstimmungen digitale Bibliothek:</h2>
         <div id="uebereinstimmungen-box">
         </div>
     </section>
 
-    <section>
-        <h2>Abgehakte (doppelter) Bücher:</h2>
-        <div id="doppelt-box">
-            <p>Titel</p>
-            <p>Regal</p>
-            <p>Bez.</p>
-            <button>Rückgängig</button>
+    <section class="ergebnisse">
+        <h2>Bearbeitet:</h2>
+        <div id="bearbeitet-box">
+            <form action="#">
+                <label><span>Lorem ipsum dolor sit amet, consetetur sadipscing elitr</span> <span>Block X</span> <span>X 57b</span></label>
+                <select>
+                    <option value="doppelt">doppelt</option>
+                    <option value="zu-scannen">zu scannen</option>
+                    <option value="gescannt">gescannt</option>
+                </select>
+                <button class="save-change">speichern</button>
+            </form>
+
+
         </div>
     </section>
 
-    <section>
-        <h2>Zum Scan vorgemerkt:</h2>
-        <div id="zum-scan-vorgemerkt-box">
-            <p>Titel</p>
-            <p>Regal</p>
-            <p>Bez.</p>
-            <button>Gescannt</button>
-        </div>
-    </section>
-
-    <section>
-        <h2>Fertig gescannte Bücher:</h2>
-        <div id="fertige-buecher-box">
-            <p>Titel</p>
-            <p>Regal</p>
-            <p>Bez.</p>
-            <button>Rückgängig</button>
-        </div>
-    </section>
-
+    <script src="./js/jquery.js"></script>
+    <script src="./js/jquery-csv.js"></script>
     <script src="./js/app.js"></script>
 
 </body>

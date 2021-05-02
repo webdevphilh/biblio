@@ -20,8 +20,7 @@ p{
 
 body{
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-    width: 130%;
+    grid-template-columns: 1fr 1fr;
     section{
         padding: 1rem;
         border: 1px blue dashed;
@@ -32,14 +31,24 @@ body{
                 width: 40%;
             }
         }
+
+        &.ergebnisse{
+            grid-column: 2;
+        }
     }
 }
 
-#doppelt-box,
-#zum-scan-vorgemerkt-box,
-#fertige-buecher-box{
-    display: grid;
-    grid-template-columns: auto 3rem 3rem 5rem;
+#bearbeitet-box{
+    > form{
+        display: grid;
+        grid-template-columns: auto 6rem 6rem;
+        outline: 1px solid green;
+
+        > label{
+            display: grid;
+            grid-template-columns: auto 9rem 4rem;
+        }
+    }
 }
 
 #uebereinstimmungen-box{

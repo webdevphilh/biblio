@@ -117,31 +117,85 @@ for (let i=0; i < physicalLibrary.length; i++){
     searchbox.appendChild(option);
 }
 
-
 /**
- * 
- *  ------ alte version ------
- * -> abgehakt button
- * titel eingabe, block und keyname in variable speichern
- * (letzte) abgehakt datei einlesen
- * neue datei erstellen "abgahakt-ss-mm-hh-dd-MM-yyyy"
- * variable-array + voerherige abgekakt liste in aktuelle datei speichern
- * 
- * aktuelle datei in array speichern
- * abgehakt-liste erzeugen <div><p><p><p></div>
- * 
- * neue datei für suchliste von physischer lib erstellen "suche-ss-mm-hh-dd-MM-yyyy"
- * aktuelle abgehakte suche nicht drin speichern (letzter eintrag oben)
- * 
- * 
- * -> rückgängig button
- * aktuellste datei löschen
- * neu laden
+ * abhaken button drücken
+ * [[titel, block, keyname], "abgehakt"] in variable speichern
+ * datei in array einlesen
+ * array mit [[titel, block, keyname], "abgehakt"] ergänzen (neuste oben)
+ * datei neu speichern
+ * array in DOM übergeben
  */
 
-/*  - - search function and show matches - - */
+
+
 let fileList = [];
 document.addEventListener("DOMContentLoaded", function () {
+
+
+    /* - - change process state of a book in the working list - - */
+    let saveButton = document.getElementsByClassName("save-change");
+    for (let i=0; i < saveButton.length; i++){
+        let bookInfos = {
+            title: saveButton[i].previousElementSibling.previousElementSibling.childNodes[0].textContent,
+            block: saveButton[i].previousElementSibling.previousElementSibling.childNodes[2].textContent,
+            keyname: saveButton[i].previousElementSibling.previousElementSibling.childNodes[4].textContent,
+            process: saveButton[i].previousElementSibling.value // state of work-process (doppelt, zu scannen, gescannt)
+        }
+        saveButton[i].addEventListener("click", function() {
+            bookInfos.process = saveButton[i].previousElementSibling.value;
+            console.log(bookInfos.process);
+        });
+    }
+
+    /* - - check the searched title as already digitalized */
+    document.getElementById("abhaken-btn").addEventListener("click", function() {
+        let bookInfos = {
+            title: document.getElementById("eingabe").value,
+            block: document.getElementById("block").innerText,
+            keyname: document.getElementById("keyname").innerText
+        }
+
+        let formElement = document.createElement("form");
+        formElement.setAttribute("action", "#");
+
+        let labelElement = document.createElement("label");
+        formElement.append(labelElement);
+
+        let blockSpan = document.createElement("span");
+        let keynameSpan = document.createElement("span");
+        let titleSpan =document.createElement("span");
+        titleSpan.innerText = bookInfos.title;
+        blockSpan.innerText = bookInfos.block;
+        keynameSpan.innerText = bookInfos.keyname;
+        labelElement.append(titleSpan, blockSpan, keynameSpan);
+
+        let selectElement = document.createElement("select");
+        formElement.append(selectElement);
+
+        let doppeltOpt = document.createElement("option");
+        selectElement.append(doppeltOpt);
+        doppeltOpt.value = "doppelt";
+        doppeltOpt.innerText = "doppelt";
+
+        let zuScannenOpt = document.createElement("option");
+        selectElement.append(zuScannenOpt);
+        zuScannenOpt.value = "zu-scannen";
+        zuScannenOpt.innerText = "zu scannen";
+
+        let gescanntOpt = document.createElement("option");
+        selectElement.append(gescanntOpt);
+        gescanntOpt.value = "gescannt";
+        gescanntOpt.innerText = "gescannt";
+
+        let changeButton = document.createElement("button");
+        formElement.append(changeButton);
+        changeButton.className = "save-change";
+        changeButton.innerText = "speichern";
+
+        document.getElementById("bearbeitet-box").appendChild(formElement);
+    });
+
+    /*  - - search function and show matches - - */
     document.getElementById("suche-btn").addEventListener("click", function () {
 
         // get and format the title-string of the digital library
