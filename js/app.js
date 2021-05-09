@@ -1,31 +1,5 @@
 
 
-function delSpecialLetters(string){
-    string = string.toLowerCase();
-    string = string.replace("ÃŸ", "ß");
-    string = string.replace("Ã¤", "ä");
-    string = string.replace("Ã„", "Ä");
-    string = string.replace("Ã¶", "ö");
-    string = string.replace("Ã–", "Ö");
-    string = string.replace("Ã¼", "ü");
-    string = string.replace("Ãœ", "Ü");
-    string = string.replace(".", "");
-    string = string.replace("-", " ");
-    string = string.replace("_", " ");
-    string = string.replace("\"", "");
-    string = string.replace("!", "");
-    string = string.replace("%", "");
-    string = string.replace("+", "");
-    string = string.replace("#", "");
-    string = string.replace(",", "");
-    string = string.replace("%", "");
-    string = string.replace("\r", "");
-    string = string.replace(":", "");
-    string = string.replace("/", "");
-    string = string.replace(")", "");
-    string = string.replace("(", "");
-    return string;
-}
 
 // https://stackoverflow.com/questions/10473745/compare-strings-javascript-return-of-likely
 function editDistance(s1, s2) {
@@ -68,8 +42,61 @@ function similarity(s1, s2) {
     return (longerLength - editDistance(longer, shorter)) / parseFloat(longerLength);
 }
 
+// https://stackoverflow.com/questions/2897619/using-html5-javascript-to-generate-and-save-a-file
+function download(filename, text) {
+    var pom = document.createElement('a');
+    pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    pom.setAttribute('download', filename);
+    if (document.createEvent) {
+        var event = document.createEvent('MouseEvents');
+        event.initEvent('click', true, true);
+        pom.dispatchEvent(event);
+    }
+    else {
+        pom.click();
+    }
+}
 
-/* - - load digital library - - */
+/* - - - format title strings from files - - - */
+function delSpecialLetters(string){
+    string = string.toLowerCase();
+    string = string.replace("ÃŸ", "ß");
+    string = string.replace("Ã¤", "ä");
+    string = string.replace("Ã„", "Ä");
+    string = string.replace("Ã¶", "ö");
+    string = string.replace("Ã–", "Ö");
+    string = string.replace("Ã¼", "ü");
+    string = string.replace("Ãœ", "Ü");
+    string = string.replace(".", "");
+    string = string.replace("-", " ");
+    string = string.replace("_", " ");
+    string = string.replace("\"", "");
+    string = string.replace("!", "");
+    string = string.replace("%", "");
+    string = string.replace("+", "");
+    string = string.replace("#", "");
+    string = string.replace(",", "");
+    string = string.replace("%", "");
+    string = string.replace("\r", "");
+    string = string.replace(":", "");
+    string = string.replace("/", "");
+    string = string.replace(")", "");
+    string = string.replace("(", "");
+    return string;
+}
+let bookInfoStack = [];
+/* - - - load local-storage of work-in-progress books into bookInfoStack - - - */
+function loadLocalStorage(){
+    for (i=1; i<= saveLocalStorage.length; i++){
+        bookInfoStack.push( new Object({
+            title: saveLocalStorage.getItem(i).split(",")[0],
+            block: saveLocalStorage.getItem(i).split(",")[1],
+            keyname: saveLocalStorage.getItem(i).split(",")[2],
+            progress: saveLocalStorage.getItem(i).split(",")[3]
+        }));
+    }
+}
+/* - - - load digital library - - - */
 let digitalDatabase = [];
 $.ajax({
     url: "./databases/lib1.csv",
@@ -82,7 +109,6 @@ $.ajax({
         digitalDatabase = data;
     }
 });
-
 /* - - load physical library - - */
 let physicalLibrary = [];
 $.ajax({
@@ -97,9 +123,12 @@ $.ajax({
     }
 });
 
+
 /* To - Do:
  * - 100% treffer werden ganz unten angezeigt.
  * - refresh bei neuer suche
+ * - savebutton -> localStorage in array speichern und mit downlaod button lokal speichern können "hh.mm.ss-dd.mm.yyyy.txt"
+ * - funktion zum checken ob ein buch das abgehakt wird bereits im storage auftaucht, mit alert anzeigen
  */
 
 
@@ -110,36 +139,105 @@ let searchArray = []
 for( let i=0; i < physicalLibrary.length; i++){
     searchArray.push(physicalLibrary[i][0].split(";")); // [ bookname, block, keyname]
 }
-// generate search options
+// generate search options in searchbar
 for (let i=0; i < physicalLibrary.length; i++){
     let option = document.createElement("option");
     option.append(document.createTextNode(searchArray[i][0]));
     searchbox.appendChild(option);
 }
 
-/**
- * abhaken button drücken
- * [[titel, block, keyname], "abgehakt"] in variable speichern
- * datei in array einlesen
- * array mit [[titel, block, keyname], "abgehakt"] ergänzen (neuste oben)
- * datei neu speichern
- * array in DOM übergeben
- */
-
-
-
 let fileList = [];
+let ongoingWorkList = [];   // save of the list of books who has market as to scan, double or scanned, for the savefile
+let saveLocalStorage = localStorage;
+
 document.addEventListener("DOMContentLoaded", function () {
 
+    /*
+
+     der speichern-button der neuen bearbeitet-form hat keine funktion weil saveButton vorher initialisiert wird
+
+    */
+
+
+    loadLocalStorage();
+
+    /* - - - create divs for the work in progress list on new start of the page - - - */
+    if (bookInfoStack){
+        for (i=0; i < bookInfoStack.length; i++){
+
+
+            let formElement = document.createElement("form");
+            formElement.setAttribute("action", "#");
+    
+            let labelElement = document.createElement("label");
+            formElement.append(labelElement);
+
+            let blockSpan = document.createElement("span");
+            let keynameSpan = document.createElement("span");
+            let titleSpan =document.createElement("span");
+
+            titleSpan.innerText = bookInfoStack[i].title;
+            
+            // add block span
+            if (bookInfoStack[i].block){
+                blockSpan.innerText = bookInfoStack[i].block;
+            }
+            else{
+                blockSpan.innerText = "NA";
+            }
+
+            // add keyname span
+            if (bookInfoStack[i].keyname){
+                keynameSpan.innerText = bookInfoStack[i].keyname;
+            }
+            else{
+                keynameSpan.innerText = "NA";
+            }
+
+            labelElement.append(titleSpan, blockSpan, keynameSpan);
+    
+            let selectElement = document.createElement("select");
+            formElement.append(selectElement);
+    
+            let doppeltOpt = document.createElement("option");
+            selectElement.append(doppeltOpt);
+            doppeltOpt.value = "doppelt";
+            doppeltOpt.innerText = "doppelt";
+    
+            let zuScannenOpt = document.createElement("option");
+            selectElement.append(zuScannenOpt);
+            zuScannenOpt.value = "zu-scannen";
+            zuScannenOpt.innerText = "zu scannen";
+    
+            let gescanntOpt = document.createElement("option");
+            selectElement.append(gescanntOpt);
+            gescanntOpt.value = "gescannt";
+            gescanntOpt.innerText = "gescannt";
+
+            let changeButton = document.createElement("button");
+            formElement.append(changeButton);
+            changeButton.className = "save-change";
+            changeButton.innerText = "speichern";
+
+            selectElement.value = bookInfoStack[i].progress;
+
+            document.getElementById("bearbeitet-box").appendChild(formElement);
+        }
+    }
 
     /* - - change process state of a book in the working list - - */
     let saveButton = document.getElementsByClassName("save-change");
     for (let i=0; i < saveButton.length; i++){
+
         let bookInfos = {
             title: saveButton[i].previousElementSibling.previousElementSibling.childNodes[0].textContent,
-            block: saveButton[i].previousElementSibling.previousElementSibling.childNodes[2].textContent,
-            keyname: saveButton[i].previousElementSibling.previousElementSibling.childNodes[4].textContent,
-            process: saveButton[i].previousElementSibling.value // state of work-process (doppelt, zu scannen, gescannt)
+            block: saveButton[i].previousElementSibling.previousElementSibling.childNodes[1].textContent,
+            keyname: saveButton[i].previousElementSibling.previousElementSibling.childNodes[2].textContent,
+            progress: saveButton[i].previousElementSibling.value // state of work-process (doppelt, zu scannen, gescannt)
+            //title: saveButton[i].previousElementSibling.previousElementSibling.childNodes[0].textContent,
+            //block: saveButton[i].previousElementSibling.previousElementSibling.childNodes[2].textContent,
+            //keyname: saveButton[i].previousElementSibling.previousElementSibling.childNodes[4].textContent,
+            //process: saveButton[i].previousElementSibling.value // state of work-process (doppelt, zu scannen, gescannt)
         }
         saveButton[i].addEventListener("click", function() {
             bookInfos.process = saveButton[i].previousElementSibling.value;
@@ -147,52 +245,68 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    /* - - check the searched title as already digitalized */
+    /* - - mark the searched title as already digitalized */
     document.getElementById("abhaken-btn").addEventListener("click", function() {
+
         let bookInfos = {
             title: document.getElementById("eingabe").value,
             block: document.getElementById("block").innerText,
-            keyname: document.getElementById("keyname").innerText
+            keyname: document.getElementById("keyname").innerText,
+            progress: "doppelt"
         }
 
-        let formElement = document.createElement("form");
-        formElement.setAttribute("action", "#");
+        // check if input is not empty then create DOM elements and add bookInfos to localStrorage
+        if (bookInfos.title){
 
-        let labelElement = document.createElement("label");
-        formElement.append(labelElement);
+            if ( ! bookInfos.block){
+                bookInfos.block = "NA";
+            }
+            if ( ! bookInfos.keyname){
+                bookInfos.keyname = "NA";
+            }
 
-        let blockSpan = document.createElement("span");
-        let keynameSpan = document.createElement("span");
-        let titleSpan =document.createElement("span");
-        titleSpan.innerText = bookInfos.title;
-        blockSpan.innerText = bookInfos.block;
-        keynameSpan.innerText = bookInfos.keyname;
-        labelElement.append(titleSpan, blockSpan, keynameSpan);
+            let formElement = document.createElement("form");
+            formElement.setAttribute("action", "#");
+    
+            let labelElement = document.createElement("label");
+            formElement.append(labelElement);
+    
+            let blockSpan = document.createElement("span");
+            let keynameSpan = document.createElement("span");
+            let titleSpan =document.createElement("span");
+            titleSpan.innerText = bookInfos.title;
+            blockSpan.innerText = bookInfos.block;
+            keynameSpan.innerText = bookInfos.keyname;
+            labelElement.append(titleSpan, blockSpan, keynameSpan);
+    
+            let selectElement = document.createElement("select");
+            formElement.append(selectElement);
+    
+            let doppeltOpt = document.createElement("option");
+            selectElement.append(doppeltOpt);
+            doppeltOpt.value = "doppelt";
+            doppeltOpt.innerText = "doppelt";
+    
+            let zuScannenOpt = document.createElement("option");
+            selectElement.append(zuScannenOpt);
+            zuScannenOpt.value = "zu-scannen";
+            zuScannenOpt.innerText = "zu scannen";
+    
+            let gescanntOpt = document.createElement("option");
+            selectElement.append(gescanntOpt);
+            gescanntOpt.value = "gescannt";
+            gescanntOpt.innerText = "gescannt";
+    
+            let changeButton = document.createElement("button");
+            formElement.append(changeButton);
+            changeButton.className = "save-change";
+            changeButton.innerText = "speichern";
+    
+            document.getElementById("bearbeitet-box").appendChild(formElement);
 
-        let selectElement = document.createElement("select");
-        formElement.append(selectElement);
-
-        let doppeltOpt = document.createElement("option");
-        selectElement.append(doppeltOpt);
-        doppeltOpt.value = "doppelt";
-        doppeltOpt.innerText = "doppelt";
-
-        let zuScannenOpt = document.createElement("option");
-        selectElement.append(zuScannenOpt);
-        zuScannenOpt.value = "zu-scannen";
-        zuScannenOpt.innerText = "zu scannen";
-
-        let gescanntOpt = document.createElement("option");
-        selectElement.append(gescanntOpt);
-        gescanntOpt.value = "gescannt";
-        gescanntOpt.innerText = "gescannt";
-
-        let changeButton = document.createElement("button");
-        formElement.append(changeButton);
-        changeButton.className = "save-change";
-        changeButton.innerText = "speichern";
-
-        document.getElementById("bearbeitet-box").appendChild(formElement);
+            saveLocalStorage.setItem((saveLocalStorage.length + 1), [bookInfos.title, bookInfos.block, bookInfos.keyname, bookInfos.progress, "\n"]);
+            
+        }
     });
 
     /*  - - search function and show matches - - */
@@ -231,7 +345,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         }
 
-        // create <div><p><p><p></div> with results
+        // create <div><p><p><p></div> with results in the match list
         for (let i=0; i < finalSearchArray.length; i++) {
             let divElement = document.createElement("div");
             let p1 = document.createElement("p");
