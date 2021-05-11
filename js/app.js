@@ -41,7 +41,6 @@ function similarity(s1, s2) {
     }
     return (longerLength - editDistance(longer, shorter)) / parseFloat(longerLength);
 }
-
 // https://stackoverflow.com/questions/2897619/using-html5-javascript-to-generate-and-save-a-file
 function download(filename, text) {
     var pom = document.createElement('a');
@@ -128,7 +127,10 @@ $.ajax({
  * - 100% treffer werden ganz unten angezeigt.
  * - refresh bei neuer suche
  * - savebutton -> localStorage in array speichern und mit downlaod button lokal speichern können "hh.mm.ss-dd.mm.yyyy.txt"
- * - funktion zum checken ob ein buch das abgehakt wird bereits im storage auftaucht, mit alert anzeigen
+ * - funktion zum checken ob ein buch das abgehakt wird bereits im storage auftaucht, mit alert anzeigen#
+ * - fehler bei 2x click von savebutton wenn workstate geändert werden soll:
+ *      "Uncaught TypeError: Cannot read property 'previousElementSibling' of undefined
+        at HTMLButtonElement.<anonymous>"
  */
 
 
@@ -152,14 +154,10 @@ let saveLocalStorage = localStorage;
 
 document.addEventListener("DOMContentLoaded", function () {
 
-    /*
+    // think twice before using it, dude
+    //saveLocalStorage.clear();
 
-     der speichern-button der neuen bearbeitet-form hat keine funktion weil saveButton vorher initialisiert wird
-
-    */
-
-
-    loadLocalStorage();
+    loadLocalStorage(); // load local Storage on startup
 
     /* - - - create divs for the work in progress list on new start of the page - - - */
     if (bookInfoStack){
@@ -225,7 +223,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    /* - - change process state of a book in the working list - - */
+    /* - - change progress state of a book in the working list - - */
     let saveButton = document.getElementsByClassName("save-change");
     for (let i=0; i < saveButton.length; i++){
 
@@ -234,14 +232,28 @@ document.addEventListener("DOMContentLoaded", function () {
             block: saveButton[i].previousElementSibling.previousElementSibling.childNodes[1].textContent,
             keyname: saveButton[i].previousElementSibling.previousElementSibling.childNodes[2].textContent,
             progress: saveButton[i].previousElementSibling.value // state of work-process (doppelt, zu scannen, gescannt)
-            //title: saveButton[i].previousElementSibling.previousElementSibling.childNodes[0].textContent,
-            //block: saveButton[i].previousElementSibling.previousElementSibling.childNodes[2].textContent,
-            //keyname: saveButton[i].previousElementSibling.previousElementSibling.childNodes[4].textContent,
-            //process: saveButton[i].previousElementSibling.value // state of work-process (doppelt, zu scannen, gescannt)
         }
+
+        //fehler wenn speichern 2mal geclickt wird, warum?
+        // funktioniert bei browser-schließen aber nicht bei refresh, refresh überschreibt ohne buttonpress
+
+        /* - - - search for the book in the localStorage and change the workstage - - - */
         saveButton[i].addEventListener("click", function() {
-            bookInfos.process = saveButton[i].previousElementSibling.value;
-            console.log(bookInfos.process);
+            bookInfos.progress = saveButton[i].previousElementSibling.value;
+            for(i=0; i < bookInfoStack.length; i++){
+                for (storagePos=1; storagePos <= saveLocalStorage.length; storagePos++){
+                    let localStorageEntry = {
+                        title: saveLocalStorage[storagePos].split(",")[0],
+                        block: saveLocalStorage[storagePos].split(",")[1],
+                        keyname: saveLocalStorage[storagePos].split(",")[2],
+                        progress: saveLocalStorage[storagePos].split(",")[3]
+                    }
+                    if (localStorageEntry.title == bookInfoStack[i].title){
+                        saveLocalStorage.setItem((storagePos), [localStorageEntry.title, localStorageEntry.block, localStorageEntry.keyname, bookInfos.progress, "\n"]);
+                        console.log(saveLocalStorage[storagePos]);
+                    }
+                }
+            }
         });
     }
 
