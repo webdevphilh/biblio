@@ -56,6 +56,7 @@ function download(filename, text) {
     }
 }
 
+
 /* - - - format title strings from files - - - */
 function delSpecialLetters(string){
     string = string.toLowerCase();
@@ -171,8 +172,6 @@ function createWIPBook(bookInfos){
 
 /* To - Do:
  * - 100% treffer werden ganz unten angezeigt.
- * - refresh bei neuer suche
- * - savebutton -> localStorage in array speichern und mit downlaod button lokal speichern können "hh.mm.ss-dd.mm.yyyy.txt"
  * - funktion zum checken ob ein buch das abgehakt wird bereits im storage auftaucht, mit alert anzeigen
  */
 
@@ -197,10 +196,6 @@ let saveLocalStorage = localStorage;
 
 
 document.addEventListener("DOMContentLoaded", function () {
-
-    // think twice before using it, dude
-    //saveLocalStorage.clear();
-
 
     /* - - - load local Storage on startup - - - */
     try{ loadLocalStorage(); }
@@ -307,6 +302,7 @@ document.addEventListener("DOMContentLoaded", function () {
     /*  - - search function and show matches - - */
     document.getElementById("suche-btn").addEventListener("click", function () {
 
+
         // get and format the title-string of the digital library
         for (let i=0; i < digitalDatabase.length; i++){
             // [Nummer, Titel, Dateiform, Datum der Aufnahme, Dateigroesse]
@@ -340,6 +336,9 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         }
 
+        // delete content from last search
+        document.getElementById("uebereinstimmungen-box").innerHTML = "";
+
         // create <div><p><p><p></div> with results in the match list
         for (let i=0; i < finalSearchArray.length; i++) {
             let divElement = document.createElement("div");
@@ -362,12 +361,9 @@ document.addEventListener("DOMContentLoaded", function () {
     /* - - - generate backup file and download it - - - */
     document.getElementById("save-lib").addEventListener("click", function(){
         let savestr = "";
-        for (i=0; i < bookInfoStack.length; i++){
-            savestr +=  bookInfoStack[i].title + "," +
-                        bookInfoStack[i].block +  "," +
-                        bookInfoStack[i].keyname +  "," +
-                        bookInfoStack[i].progress + "\n";
+        for (i=1; i <= saveLocalStorage.length; i++){
+            savestr += saveLocalStorage[i];
         }
-        download('test.csv', savestr);
+        download( new Date() + '.csv', savestr);
     });
 });
