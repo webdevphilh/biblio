@@ -195,18 +195,16 @@ let fileList = [];
 let ongoingWorkList = [];   // save of the list of books who has market as to scan, double or scanned, for the savefile
 let saveLocalStorage = localStorage;
 
+
 document.addEventListener("DOMContentLoaded", function () {
 
     // think twice before using it, dude
     //saveLocalStorage.clear();
 
-    try{
-        loadLocalStorage(); // load local Storage on startup
-    }
-    catch(e){
-        console.log(e);
-    }
 
+    /* - - - load local Storage on startup - - - */
+    try{ loadLocalStorage(); }
+    catch(e){ console.log(e); }
 
     /* - - - create divs for the work in progress list on new start of the page - - - */
     if (bookInfoStack){
@@ -359,5 +357,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
             document.getElementById("uebereinstimmungen-box").appendChild(divElement);
         }
+    });
+
+    /* - - - generate backup file and download it - - - */
+    document.getElementById("save-lib").addEventListener("click", function(){
+        let savestr = "";
+        for (i=0; i < bookInfoStack.length; i++){
+            savestr +=  bookInfoStack[i].title + "," +
+                        bookInfoStack[i].block +  "," +
+                        bookInfoStack[i].keyname +  "," +
+                        bookInfoStack[i].progress + "\n";
+        }
+        download('test.csv', savestr);
     });
 });
