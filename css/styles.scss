@@ -41,8 +41,10 @@ body{
 #bearbeitet-box{
     > form{
         display: grid;
-        grid-template-columns: auto 6rem 6rem;
-        outline: 1px solid green;
+        grid-template-columns: auto 6rem 6rem 5rem;
+        margin-top: 1rem;
+        padding: .3rem;
+        background-color: rgba($color: #c8e7ff, $alpha: 1.0);
 
         > label{
             display: grid;

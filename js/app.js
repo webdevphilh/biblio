@@ -166,6 +166,11 @@ function createWIPBook(bookInfos){
     changeButton.className = "save-change";
     changeButton.innerText = "speichern";
 
+    let delButton = document.createElement("button");
+    formElement.append(delButton);
+    delButton.className = "del-button";
+    delButton.innerText = "Löschen";
+
     document.getElementById("bearbeitet-box").appendChild(formElement);
 }
 
@@ -173,6 +178,8 @@ function createWIPBook(bookInfos){
 /* To - Do:
  * - 100% treffer werden ganz unten angezeigt.
  * - funktion zum checken ob ein buch das abgehakt wird bereits im storage auftaucht, mit alert anzeigen
+ * - einträge löschbar machen
+ * - button / funktion zum einlesen von backup
  */
 
 
@@ -223,6 +230,16 @@ document.addEventListener("DOMContentLoaded", function () {
             createWIPBook(bookInfoStackEntity);
         }
     }
+
+
+    /* - - - delete single book entry on work in progress list - - - */
+    let delButton = document.getElementsByClassName("del-button");
+        for (let i=0; i < delButton.length; i++){
+            delButton[i].addEventListener("click", function () {
+                //let title = delButton[i].parentElement.innerText.split("\n")[0]; // get the titlestring of the form-element from the button
+                console.log(saveLocalStorage.getItem(i+1));
+            });
+        }
 
     /* - - change progress state of a book in the working list - - */
     let saveButton = document.getElementsByClassName("save-change");
@@ -365,5 +382,12 @@ document.addEventListener("DOMContentLoaded", function () {
             savestr += saveLocalStorage[i];
         }
         download( new Date() + '.csv', savestr);
+    });
+
+    /* - - - deleting the localStorage - - - */
+    document.getElementById("delete-all").addEventListener("click", function() {
+        if (window.confirm("- - ACHTUNG! - -\n Lokale Liste endgültig löschen?")){
+            saveLocalStorage.clear();
+        }
     });
 });

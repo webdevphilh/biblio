@@ -47,9 +47,11 @@ body section.ergebnisse {
 #bearbeitet-box > form {
   display: -ms-grid;
   display: grid;
-  -ms-grid-columns: auto 6rem 6rem;
-      grid-template-columns: auto 6rem 6rem;
-  outline: 1px solid green;
+  -ms-grid-columns: auto 6rem 6rem 5rem;
+      grid-template-columns: auto 6rem 6rem 5rem;
+  margin-top: 1rem;
+  padding: .3rem;
+  background-color: #c8e7ff;
 }
 
 #bearbeitet-box > form > label {
