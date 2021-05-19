@@ -316,6 +316,11 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
+
+
+
+
+
     /*  - - search function and show matches - - */
     document.getElementById("suche-btn").addEventListener("click", function () {
 
@@ -374,6 +379,12 @@ document.addEventListener("DOMContentLoaded", function () {
             document.getElementById("uebereinstimmungen-box").appendChild(divElement);
         }
     });
+
+
+
+
+
+
 
     /* - - - generate backup file and download it - - - */
     document.getElementById("save-lib").addEventListener("click", function(){
