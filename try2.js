@@ -1,13 +1,14 @@
 
 
 
-function Loading(){
+function LoadLib(){
 
-    this.digitalDatabase = [];
-    this.physicalLibrary = [];
+    let digitalDatabase = [];
+    let physicalLibrary = [];
 
-    /* - - - load digital library - - - */
+    /* - - - load digital library from file and format it into this.digitalDatabase [title:, number:] - - - */
     this.digitalLib = function() {
+        let tempDigitalDB = [];
         $.ajax({
             url: "./databases/lib1.csv",
             async: false,
@@ -16,13 +17,28 @@ function Loading(){
             },
             dataType: "text",
             complete: function () {
-                digitalDatabase = data;
+                tempDigitalDB = data;
             }
         });
+
+        for (let i=0; i < tempDigitalDB.length; i++){
+            let tempArray = tempDigitalDB[i][0].split(";");
+            let title = tempArray[1];
+
+            // the titles of the books has "_dl" and "_sw" in the name, they re doubles
+            if ( title != "Name" && title && ! title.includes("_SW_")){
+                title = title.split("_DL_");
+                this.digitalDatabase.push(new Object({
+                    title: title[0],
+                    number: tempArray[0],
+                }));
+            }
+        }
     }
 
-    /* - - load physical library - - */
+    /* - - load physical library from file into this.physicalLibrary [title:, block:, keyname:, progress:] - - */
     this.physLib = function(){
+        let tempPhysLib = [];
         $.ajax({
             url: "./databases/base1.csv",
             async: false,
@@ -31,21 +47,41 @@ function Loading(){
             },
             dataType: "text",
             complete: function () {
-                physicalLibrary = data;
+                tempPhysLib = data;
             }
         });
+
+        for (let i=0; i < tempPhysLib.length; i++){
+            let tempArr = tempPhysLib[i][0].split(";");
+            if (tempArr[0] != "titel"){
+                physicalLibrary.push(new Object({
+                    title: tempArr[0],
+                    block: tempArr[1],
+                    keyname: tempArr[2],
+                    progress: ""
+                }));
+            }
+        }
     }
 
-
+    Object.defineProperty(this, "digitalDatabase", {
+        get: function(){
+            return digitalDatabase;
+        }
+    });
+    Object.defineProperty(this, "physicalLibrary", {
+        get: function(){
+            return physicalLibrary
+        }
+    });
 }
-
-
 
 function BrowserStorage(){
 
     let storage = [];
 
-    let generateDOMEntry = function(bookEntry){
+    // function to generate work-in-progress entry in DOM
+    let generateWIPEntry = function(bookEntry){
         let formElement = document.createElement("form");
         formElement.setAttribute("action", "#");
     
@@ -109,6 +145,7 @@ function BrowserStorage(){
         }
     }
 
+    /* - - - load up List of books into DOM - - - */
     this.createResult = function(bookstack){
         // preformat variables if they´re empty
         if (bookstack){
@@ -122,10 +159,9 @@ function BrowserStorage(){
         }
 
         for (let i=0; i < bookstack.length; i++){
-            generateDOMEntry(bookstack[i]);
+            generateWIPEntry(bookstack[i]);
         }
     }
-
 
     Object.defineProperty(this, "storage", {
         get: function(){
@@ -134,13 +170,24 @@ function BrowserStorage(){
     })
 }
 
+function Search(){
+
+}
 
 
 let i = new BrowserStorage;
-let load = new Loading;
+let load = new LoadLib;
 i.init();
 
 i.createResult(i.storage);
 load.digitalLib();
 load.physLib();
-console.log(i.storage);
+
+
+/* - - - initalize dropdown for searchbar - - - */
+let searchbox = document.getElementById("physical-library");
+for (let i=0; i < load.physicalLibrary.length; i++){
+    let option = document.createElement("option");
+    option.append(document.createTextNode(load.physicalLibrary[i].title));
+    searchbox.appendChild(option);
+}
