@@ -57,6 +57,22 @@ function download(filename, text) {
     }
 }
 
+function loadFile(fileStr){
+    let tempArray = [];
+    $.ajax({
+        url: fileStr,
+        async: false,
+        success: function (csvd) {
+            data = $.csv.toArrays(csvd);
+        },
+        dataType: "text",
+        complete: function () {
+            tempArray = data;
+        }
+    });
+    return tempArray;
+}
+
 /* - - - own stuff - - - */
 
 function LoadLib(){
@@ -66,18 +82,7 @@ function LoadLib(){
 
     /* - - - load digital library from file and format it into this.digitalDatabase [title:, number:] - - - */
     this.digitalLib = function() {
-        let tempDigitalDB = [];
-        $.ajax({
-            url: "./databases/lib1.csv",
-            async: false,
-            success: function (csvd) {
-                data = $.csv.toArrays(csvd);
-            },
-            dataType: "text",
-            complete: function () {
-                tempDigitalDB = data;
-            }
-        });
+        let tempDigitalDB = loadFile("./databases/lib1.csv");
 
         for (let i=0; i < tempDigitalDB.length; i++){
             let tempArray = tempDigitalDB[i][0].split(";");
@@ -96,18 +101,7 @@ function LoadLib(){
 
     /* - - load physical library from file into this.physicalLibrary [title:, block:, keyname:, progress:] - - */
     this.physLib = function(){
-        let tempPhysLib = [];
-        $.ajax({
-            url: "./databases/base1.csv",
-            async: false,
-            success: function (csvd) {
-                data = $.csv.toArrays(csvd);
-            },
-            dataType: "text",
-            complete: function () {
-                tempPhysLib = data;
-            }
-        });
+        let tempPhysLib = loadFile("./databases/base1.csv");
 
         for (let i=0; i < tempPhysLib.length; i++){
             let tempArr = tempPhysLib[i][0].split(";");
@@ -322,6 +316,21 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    /* - - - load backup file - - -  */
+    document.getElementById("backup-button").addEventListener("click", function(){
+        let tempBackup = loadFile("./databases/backup.csv");
+        for (let i=0; i < tempBackup.length; i++){
+            let book = new Object({ 
+                title: tempBackup[i][0], 
+                block:tempBackup[i][1], 
+                keyname:tempBackup[i][2], 
+                progress:tempBackup[i][3] 
+            });
+            strge.generateWIPEntry(book);
+            strge.add(book)
+        }
+    });
+
     /* - - - deleting the localStorage - - - */
     document.getElementById("delete-all").addEventListener("click", function() {
         strge.delStorage();
@@ -444,5 +453,4 @@ load.physLib();
 /* To - Do:
  * - 100% treffer werden ganz unten angezeigt.
  * - funktion zum checken ob ein buch das abgehakt wird bereits im storage auftaucht, mit alert anzeigen
- * - button / funktion zum einlesen von backup
  */
