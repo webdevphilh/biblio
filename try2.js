@@ -40,6 +40,20 @@ function similarity(s1, s2) {
     }
     return (longerLength - editDistance(longer, shorter)) / parseFloat(longerLength);
 }
+// https://stackoverflow.com/questions/2897619/using-html5-javascript-to-generate-and-save-a-file
+function download(filename, text) {
+    var pom = document.createElement('a');
+    pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    pom.setAttribute('download', filename);
+    if (document.createEvent) {
+        var event = document.createEvent('MouseEvents');
+        event.initEvent('click', true, true);
+        pom.dispatchEvent(event);
+    }
+    else {
+        pom.click();
+    }
+}
 
 
 function LoadLib(){
@@ -166,20 +180,27 @@ function BrowserStorage(){
         let delButton = document.createElement("button");
         formElement.append(delButton);
         delButton.className = "del-button";
-        delButton.innerText = "Löschen";
+
+        let delLink = document.createElement("a");
+        delButton.append(delLink);
+        delLink.href = "/";
+        delLink.innerText = "Löschen";
     
         document.getElementById("bearbeitet-box").appendChild(formElement);
     }
 
     // Load local storage into array on startup
     this.init = function (){
+        //console.log(storageLocaly);
         for (let i = 1; i <= storageLocaly.length; i++){
+            //console.log(storageLocaly);
             storage.push(new Object({
                 title: storageLocaly.getItem(i).split(",")[0],
                 block: storageLocaly.getItem(i).split(",")[1],
                 keyname: storageLocaly.getItem(i).split(",")[2],
                 progress: storageLocaly.getItem(i).split(",")[3]
             }));
+            //console.log(storage);
         }
     }
 
@@ -201,20 +222,50 @@ function BrowserStorage(){
         }
     }
 
-    /* - - - clears the localStorage of the Browser - - - */
+    /* - - - clears the whole localStorage of the Browser - - - */
     this.delStorage = function() {
         if (window.confirm("- - ACHTUNG! - -\n Lokale Liste endgültig löschen?")){
             storageLocaly.clear();
         }
     }
 
+    /* - - - add entry to localStorage - - - */
     this.add = function(book){
         storageLocaly.setItem((storageLocaly.length + 1), [book.title, book.block, book.keyname, book.progress] );
     }
 
     this.set = function(number, book){
-        storageLocaly.setItem(number, [book.title, book.block, book.keyname, book.progress]);
-        console.log(storageLocaly);
+        storageLocaly.setItem(number + 1, [book.title, book.block, book.keyname, book.progress]);
+    }
+
+    /* - - - delete selected entry from localStorage - - - */
+    this.delEntry = function(bookTitle){
+
+        if (window.confirm("- - ACHTUNG! - -\n Eintrag löschen?\n" + bookTitle)){
+
+            for (let i=1; i <= storageLocaly.length; i++){
+                let storageTitle = storageLocaly[i].split(",")[0];
+                if (bookTitle == storageTitle){
+                    storageLocaly.removeItem(i);
+                }
+            }
+
+            /* - - - reasign index-numbers in localStorage - - - */
+            let remainingBooks = [];
+            for (let i=0; i <= storageLocaly.length; i++){
+                if (storageLocaly[ i + 1 ]){
+                    remainingBooks.push(storageLocaly[i + 1]);
+                }
+            }
+            //storageLocaly.clear();
+            for (let i=0; i < remainingBooks.length; i++){
+                storageLocaly.setItem(i+1, remainingBooks[i]);
+
+                if (storageLocaly[ i + 1 ] == storageLocaly[ i + 2 ]){
+                    storageLocaly.removeItem(i + 2);
+                }
+            }
+        }
     }
 
     Object.defineProperty(this, "storage", {
@@ -222,8 +273,10 @@ function BrowserStorage(){
             return storage;
         }
     });
-    Object.defineProperty(this, "storageLocaly", function(){
-        return storageLocaly;
+    Object.defineProperty(this, "storageLocaly", {
+        get: function(){
+            return storageLocaly;
+        }
     });
 }
 
@@ -237,6 +290,13 @@ load.digitalLib();
 load.physLib();
 
 
+/* To - Do:
+ * - 100% treffer werden ganz unten angezeigt.
+ * - funktion zum checken ob ein buch das abgehakt wird bereits im storage auftaucht, mit alert anzeigen
+ * - button / funktion zum einlesen von backup
+ */
+
+
 /* - - - initalize dropdown for searchbar - - - */
 let searchbox = document.getElementById("physical-library");
 for (let i=0; i < load.physicalLibrary.length; i++){
@@ -245,9 +305,7 @@ for (let i=0; i < load.physicalLibrary.length; i++){
     searchbox.appendChild(option);
 }
 
-
 document.addEventListener("DOMContentLoaded", function () {
-
 
     /* - - change progress state of a book in the working list - - */
     let saveButton = document.getElementsByClassName("save-change");
@@ -255,7 +313,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         /* - - - search for the book in the localStorage and change the workstage - - - */
         saveButton[i].addEventListener("click", function() {
-
             let bookInfos = {
                 title: saveButton[i].previousElementSibling.previousElementSibling.childNodes[0].textContent,
                 block: saveButton[i].previousElementSibling.previousElementSibling.childNodes[1].textContent,
@@ -271,10 +328,26 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    /* - - - delete single book entry on work in progress list - - - */
+    let delButton = document.getElementsByClassName("del-button");
+    for (let i=0; i < delButton.length; i++){
+        delButton[i].addEventListener("click", function () {
+            strge.delEntry(delButton[i].parentElement.innerText.split("\n")[0]);
+        });
+    }
 
     /* - - - deleting the localStorage - - - */
     document.getElementById("delete-all").addEventListener("click", function() {
         strge.delStorage();
+    });
+
+    /* - - - generate backup file and download it - - - */
+    document.getElementById("save-lib").addEventListener("click", function(){
+        let savestr = "";
+        for (i=1; i <= strge.storageLocaly.length; i++){
+            savestr += strge.storageLocaly[i] + "\n";
+        }
+        download( new Date() + '.csv', savestr);
     });
 
     /*  - - search function and show matches - - */
@@ -370,5 +443,4 @@ document.addEventListener("DOMContentLoaded", function () {
             strge.add(bookInfos);
         }
     });
-
 });

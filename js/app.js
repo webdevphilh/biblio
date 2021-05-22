@@ -231,15 +231,16 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-
     /* - - - delete single book entry on work in progress list - - - */
-    let delButton = document.getElementsByClassName("del-button");
-        for (let i=0; i < delButton.length; i++){
-            delButton[i].addEventListener("click", function () {
-                //let title = delButton[i].parentElement.innerText.split("\n")[0]; // get the titlestring of the form-element from the button
-                console.log(saveLocalStorage.getItem(i+1));
-            });
-        }
+    
+    /*let delButton = document.getElementsByClassName("del-button");
+    for (let i=0; i < delButton.length; i++){
+        delButton[i].addEventListener("click", function () {
+            //let title = delButton[i].parentElement.innerText.split("\n")[0]; // get the titlestring of the form-element from the button
+            console.log(saveLocalStorage.getItem(i+1));
+        });
+    }
+    */
 
     /* - - change progress state of a book in the working list - - */
     let saveButton = document.getElementsByClassName("save-change");
