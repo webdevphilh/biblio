@@ -213,7 +213,8 @@ function BrowserStorage(){
     }
 
     this.set = function(number, book){
-        this.storage.setItem(number, [book.title, book.block, book.keyname, book.progress]);
+        storageLocaly.setItem(number, [book.title, book.block, book.keyname, book.progress]);
+        console.log(storageLocaly);
     }
 
     Object.defineProperty(this, "storage", {
@@ -252,22 +253,22 @@ document.addEventListener("DOMContentLoaded", function () {
     let saveButton = document.getElementsByClassName("save-change");
     for (let i=0; i < saveButton.length; i++){
 
-    /* - - - search for the book in the localStorage and change the workstage - - - */
-    saveButton[i].addEventListener("click", function() {
+        /* - - - search for the book in the localStorage and change the workstage - - - */
+        saveButton[i].addEventListener("click", function() {
 
-        let bookInfos = {
-            title: saveButton[i].previousElementSibling.previousElementSibling.childNodes[0].textContent,
-            block: saveButton[i].previousElementSibling.previousElementSibling.childNodes[1].textContent,
-            keyname: saveButton[i].previousElementSibling.previousElementSibling.childNodes[2].textContent,
-            progress: saveButton[i].previousElementSibling.value // state of work-process (doppelt, zu scannen, gescannt)
-        }
-
-        for (let pos=0; pos < strge.storage.length; pos++){
-            if (strge.storage[pos].title == bookInfos.title){
-                strge.set(pos, bookInfos);
+            let bookInfos = {
+                title: saveButton[i].previousElementSibling.previousElementSibling.childNodes[0].textContent,
+                block: saveButton[i].previousElementSibling.previousElementSibling.childNodes[1].textContent,
+                keyname: saveButton[i].previousElementSibling.previousElementSibling.childNodes[2].textContent,
+                progress: saveButton[i].previousElementSibling.value // state of work-process (doppelt, zu scannen, gescannt)
             }
-        }
-    });
+
+            for (let pos=0; pos < strge.storage.length; pos++){
+                if (strge.storage[pos].title == bookInfos.title){
+                    strge.set(pos, bookInfos);
+                }
+            }
+        });
     }
 
 
