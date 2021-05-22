@@ -1,5 +1,7 @@
 
 
+/* - - - yoink - - - */
+
 // https://stackoverflow.com/questions/10473745/compare-strings-javascript-return-of-likely
 function editDistance(s1, s2) {
     s1 = s1.toLowerCase();
@@ -55,6 +57,7 @@ function download(filename, text) {
     }
 }
 
+/* - - - own stuff - - - */
 
 function LoadLib(){
 
@@ -280,32 +283,15 @@ function BrowserStorage(){
     });
 }
 
-
-let strge = new BrowserStorage;
-let load = new LoadLib;
-
-strge.init();
-strge.createResult(strge.storage);
-load.digitalLib();
-load.physLib();
-
-
-/* To - Do:
- * - 100% treffer werden ganz unten angezeigt.
- * - funktion zum checken ob ein buch das abgehakt wird bereits im storage auftaucht, mit alert anzeigen
- * - button / funktion zum einlesen von backup
- */
-
-
-/* - - - initalize dropdown for searchbar - - - */
-let searchbox = document.getElementById("physical-library");
-for (let i=0; i < load.physicalLibrary.length; i++){
-    let option = document.createElement("option");
-    option.append(document.createTextNode(load.physicalLibrary[i].title));
-    searchbox.appendChild(option);
-}
-
 document.addEventListener("DOMContentLoaded", function () {
+
+    /* - - - initalize dropdown for searchbar - - - */
+    let searchbox = document.getElementById("physical-library");
+    for (let i=0; i < load.physicalLibrary.length; i++){
+        let option = document.createElement("option");
+        option.append(document.createTextNode(load.physicalLibrary[i].title));
+        searchbox.appendChild(option);
+    }
 
     /* - - change progress state of a book in the working list - - */
     let saveButton = document.getElementsByClassName("save-change");
@@ -444,3 +430,19 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 });
+
+
+let strge = new BrowserStorage;
+let load = new LoadLib;
+
+strge.init();
+strge.createResult(strge.storage);
+load.digitalLib();
+load.physLib();
+
+
+/* To - Do:
+ * - 100% treffer werden ganz unten angezeigt.
+ * - funktion zum checken ob ein buch das abgehakt wird bereits im storage auftaucht, mit alert anzeigen
+ * - button / funktion zum einlesen von backup
+ */
