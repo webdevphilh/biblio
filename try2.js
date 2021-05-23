@@ -326,6 +326,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 keyname:tempBackup[i][2], 
                 progress:tempBackup[i][3] 
             });
+            console.log(book);
             strge.generateWIPEntry(book);
             strge.add(book)
         }
@@ -452,5 +453,5 @@ load.physLib();
 
 /* To - Do:
  * - 100% treffer werden ganz unten angezeigt.
- * - funktion zum checken ob ein buch das abgehakt wird bereits im storage auftaucht, mit alert anzeigen
+ * - funktion zum checken ob ein buch das abgehakt/zu-scannen gemarkt wird bereits im storage auftaucht, mit alert anzeigen
  */

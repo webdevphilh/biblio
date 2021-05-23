@@ -1,0 +1,5 @@
+there are 3 files in here:
+
+"backup.csv" is for reuploading the work-in-progress list on the right side of the page
+"base1.csv" is the physical lib which appears as dropdown list on the search-form input
+"lib1.csv" is the digital lib, which appears on the right side of the page when checked with the searchterm
