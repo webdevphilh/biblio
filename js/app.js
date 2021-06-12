@@ -354,7 +354,8 @@ document.addEventListener("DOMContentLoaded", function () {
         let searchArray = [];
         for (let i=0; i < load.digitalDatabase.length; i++){
             let simi = similarity(search, load.digitalDatabase[i].title);
-            if ( simi >= 0.2 ){
+            if ( simi >= 0.35 ){
+                console.log(simi);
                 // [percentage of match, title]
                 searchArray.push([(simi*100).toFixed(2), load.digitalDatabase[i].number, load.digitalDatabase[i].title]);
             }
